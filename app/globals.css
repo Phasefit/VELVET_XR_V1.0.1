@@ -773,13 +773,38 @@ select:focus-visible {
   backdrop-filter: blur(22px);
 }
 
-.brand-copy { display: flex; flex-direction: column; line-height: 1.15; }
-.brand-copy strong { font-size: 14px; letter-spacing: 0.1em; }
-.brand-copy small { margin-top: 3px; color: var(--dim); font-size: 11px; }
+.brand-copy { 
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15; 
+}
 
-.desktop-nav { display: flex; align-items: center; gap: 34px; }
-.desktop-nav a { color: var(--muted); font-size: 14px; font-weight: 700; }
-.desktop-nav a:hover { color: var(--ink); }
+.brand-copy strong { 
+  font-size: 14px; 
+  letter-spacing: 0.1em; 
+}
+
+.brand-copy small { 
+  margin-top: 3px; 
+  color: var(--dim); 
+  font-size: 11px; 
+}
+
+.desktop-nav { 
+  display: flex; 
+  align-items: center; 
+  gap: 34px; 
+}
+
+.desktop-nav a { 
+  color: var(--muted); 
+  font-size: 14px; 
+  font-weight: 700; 
+}
+
+.desktop-nav a:hover { 
+  color: var(--ink); 
+}
 
 .discreet-toggle {
   justify-self: end;
@@ -1299,7 +1324,8 @@ footer > p { margin: 0; color: var(--dim); font-size: 10px; text-align: center; 
   .topbar {
     min-height: 68px;
     grid-template-columns: 1fr auto;
-    padding: 0 16px; }
+    padding: 0 16px; 
+  }
     
   .desktop-nav {
     display: flex;
@@ -1307,19 +1333,19 @@ footer > p { margin: 0; color: var(--dim); font-size: 10px; text-align: center; 
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
-    scrollbar-width: none;      /* Firefox */
-    -ms-overflow-style: none;   /* Legacy Edge/IE */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   .desktop-nav::-webkit-scrollbar {
-    display: none;              /* WebKit */
+    display: none;
   }
 
   .desktop-nav a {
     flex: 0 0 auto;
     white-space: nowrap;
-  }
-  
+}
+
   .discreet-toggle span:last-child { display: none; }
   .hero { min-height: auto; gap: 54px; padding: 70px 18px 78px; }
   .hero h1 { font-size: clamp(44px, 13vw, 68px); }
@@ -2586,16 +2612,16 @@ footer > p { margin: 0; color: var(--dim); font-size: 10px; text-align: center; 
     overflow-y: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
-}
+  }
 
   .site-shell .desktop-nav::-webkit-scrollbar {
-  display: none;
-}
+    display: none;
+  }
 
   .site-shell .desktop-nav a {
   flex: 0 0 auto;
   white-space: nowrap;
-}
+  }
 
   .site-shell .hero {
     grid-template-columns: 1fr;
@@ -2658,6 +2684,23 @@ footer > p { margin: 0; color: var(--dim); font-size: 10px; text-align: center; 
     width: calc(100% - 16px);
   }
 
+  .site-shell .desktop-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .site-shell .desktop-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-shell .desktop-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
   .site-shell .brand .brand-mark {
     width: 43px;
     height: 43px;
