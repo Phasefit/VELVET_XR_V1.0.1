@@ -1,0 +1,13 @@
+diff --git a/node_modules/vinext/dist/server/static-file-cache.js b/node_modules/vinext/dist/server/static-file-cache.js
+index ba3bec2..df952dd 100644
+--- a/node_modules/vinext/dist/server/static-file-cache.js
++++ b/node_modules/vinext/dist/server/static-file-cache.js
+@@ -108,7 +108,7 @@ var StaticFileCache = class StaticFileCache {
+ 				original.headers["Vary"] = "Accept-Encoding";
+ 				entry.notModifiedHeaders["Vary"] = "Accept-Encoding";
+ 			}
+-			const pathname = "/" + relativePath;
++			const pathname = "/" + relativePath.replaceAll(path.sep, "/");
+ 			entries.set(pathname, entry);
+ 			if (ext === ".html") if (relativePath.endsWith("/index.html")) {
+ 				const dirPath = "/" + relativePath.slice(0, -11);
