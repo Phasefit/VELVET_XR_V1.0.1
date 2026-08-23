@@ -37,6 +37,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description:
       "Compare VR porn, AR and passthrough MR platforms for Meta Quest, Apple Vision Pro, PCVR, PICO and mobile, ranked by documented XR capabilities.",
+    alternates: {
+      canonical: "/",
+    },
     openGraph: {
       title: "Best VR Porn, AR & Passthrough MR Sites (2026) | VelvetXR",
       description:

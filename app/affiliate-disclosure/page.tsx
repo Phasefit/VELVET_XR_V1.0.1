@@ -22,7 +22,15 @@ export default function AffiliateDisclosurePage() {
       currentPath="/affiliate-disclosure"
     >
       <div className="status-panel">
-        <span>Current affiliate status · 9 August 2026</span>
+        <span>
+          Current affiliate status ·{" "}
+          {new Intl.DateTimeFormat("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            timeZone: "Europe/Oslo",
+          }).format(new Date())}
+        </span>
         <strong>
           {hasActiveLinks
             ? `${activeCount} of ${totalCount} destinations currently use a configured affiliate URL.`
