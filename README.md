@@ -1,8 +1,8 @@
-# vinext-starter
+# VelvetXR
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+VelvetXR is an English-language directory for comparing adult XR platforms across VR, AR, passthrough MR, WebXR, and supported devices.
+
+The site is built with vinext and configured for Cloudflare Workers. The production domain is `https://www.velvetxr.com`.
 
 ## Prerequisites
 
@@ -16,85 +16,60 @@ npm run dev
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## Verification
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm run type
+npm run lint
+npm test
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+`npm test` builds the project and runs the rendered HTML checks in `tests/rendered-html.test.mjs`.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+GitHub Actions runs the type check, lint, build, and rendered tests for pushes and pull requests targeting `main`.
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+## Cloudflare Workers
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+The repository includes `wrangler.jsonc` for the production Worker configuration. The Worker is named `velvet-xr` and intentionally does not contain a Cloudflare account ID, so the project can be connected to the current Cloudflare account at deployment time.
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+The application entry point is `vinext/server/app-router-entry`. Local Cloudflare bindings are simulated through `vite.config.ts`; no D1 or R2 binding is currently required by the site.
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+## Affiliate configuration
 
-## Useful Commands
+Affiliate destinations are supplied through environment variables and are never hard-coded as commission URLs. See `.env.example` for the supported variables.
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+If an affiliate variable is empty or invalid, the site falls back to the platform's standard HTTPS URL. Affiliate status is exposed to the UI so configured partners can be marked appropriately.
 
-## Learn More
+Do not commit `.env` files or affiliate credentials. `.env*` files are ignored except for `.env.example`.
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+## Public operator information
+
+`.env.example` also documents the public operator fields that must be completed with verified information before public launch:
+
+- `SITE_OPERATOR_NAME`
+- `SITE_OPERATOR_ADDRESS`
+- `SITE_OPERATOR_REGISTER`
+- `SITE_OPERATOR_ORG_NUMBER`
+- `SITE_OPERATOR_VAT`
+- `CONTACT_EMAIL`
+
+Do not invent operator details. The contact page is designed to avoid publishing unverified placeholder information.
+
+## SEO and indexing
+
+The production metadata uses `https://www.velvetxr.com` as the canonical site URL. Public crawling is enabled through `app/robots.ts`, and `app/sitemap.ts` publishes the public trust, guide, legal, and contact routes.
+
+Private outbound redirect routes under `/go/*` remain `noindex` and `no-store`.
+
+## Optional ChatGPT sign-in
+
+The repository includes helpers in `app/chatgpt-auth.ts` for optional or required Sign in with ChatGPT flows where needed. Public directory content remains anonymous-compatible.
+
+## Useful project areas
+
+- `app/` — pages, ranking UI, platform data, affiliate handling, and legal/trust content
+- `worker/` — Cloudflare Worker entry point
+- `build/` — build-time helpers and Vite integration
+- `tests/` — rendered HTML and behavior checks
+- `wrangler.jsonc` — Cloudflare Worker deployment configuration
+- `.env.example` — affiliate and operator configuration template
