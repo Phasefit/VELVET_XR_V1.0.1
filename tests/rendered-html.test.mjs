@@ -42,7 +42,7 @@ test("server-renders the English ranking content behind the session age overlay"
   assert.match(html, /href="\/affiliate-disclosure"/);
   assert.match(html, /Loading VelvetXR/);
   assert.match(html, /name="robots" content="noindex, nofollow"/i);
-  assert.match(html, /property="og:image" content="http:\/\/localhost(?::3000)?\/og\.png"/i);
+  assert.match(html, /property="og:image" content="https:\/\/www\.velvetxr\.com\/og\.png"/i);
   assert.doesNotMatch(html, /NÆRVÆR|Immersiv 18\+ teknologiguide/i);
 });
 
@@ -129,7 +129,8 @@ test("keeps filters, evidence, local preferences, and affiliate state consistent
   assert.match(route, /"Cache-Control": "private, no-store"/);
   assert.match(affiliateConfig, /partnerUrl \?\? platform\.url/);
   assert.match(affiliateConfig, /activePlatformIds/);
-  assert.match(robots, /disallow: "\/"/);
+  assert.match(robots, /allow: "\/"/);
+  assert.match(robots, /https:\/\/www\.velvetxr\.com\/sitemap\.xml/);
   assert.match(envExample, /SITE_OPERATOR_NAME=/);
   assert.match(envExample, /CONTACT_EMAIL=/);
 });
