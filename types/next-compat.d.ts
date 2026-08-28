@@ -8,7 +8,7 @@ declare module "next" {
 }
 
 declare module "next/link" {
-  const Link: any;
+  const Link: unknown;
   export default Link;
 }
 
