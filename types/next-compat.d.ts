@@ -8,7 +8,12 @@ declare module "next" {
 }
 
 declare module "next/link" {
-  const Link: unknown;
+  const Link: (props: {
+    href: string;
+    children?: unknown;
+    [key: string]: unknown;
+  }) => JSX.Element;
+
   export default Link;
 }
 
