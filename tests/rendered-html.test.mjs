@@ -41,7 +41,7 @@ test("server-renders the English ranking content behind the session age overlay"
   assert.match(html, /href="\/how-we-rank"/);
   assert.match(html, /href="\/affiliate-disclosure"/);
   assert.match(html, /Loading VelvetXR/);
-  assert.match(html, /name="robots" content="noindex, nofollow"/i);
+  assert.match(html, /name="robots" content="index, follow"/i);
   assert.match(html, /property="og:image" content="https:\/\/www\.velvetxr\.com\/og\.png"/i);
   assert.doesNotMatch(html, /NÆRVÆR|Immersiv 18\+ teknologiguide/i);
 });
@@ -68,7 +68,7 @@ test("server-renders every trust and guide route with unique English metadata", 
     assert.equal((html.match(/<h1\b/gi) ?? []).length, 1, pathname);
     assert.match(html, /<main class="trust-main" id="trust-content">/);
     assert.match(html, /Skip to content/);
-    assert.match(html, /name="robots" content="noindex, nofollow"/i);
+    assert.match(html, /name="robots" content="index, follow"/i);
     assert.doesNotMatch(html, /#hovedinnhold|#katalog|#teknologi|#metodikk/);
     assert.equal(seenTitles.has(expectedTitle), false, expectedTitle);
     seenTitles.add(expectedTitle);
