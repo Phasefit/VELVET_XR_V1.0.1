@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Compare leading adult XR platforms by device support and documented capabilities.",
       images: [socialImage],
     },
-    robots: { index: false, follow: false },
+    robots: { index: true, follow: true },
   };
 }
 
