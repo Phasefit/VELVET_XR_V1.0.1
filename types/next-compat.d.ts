@@ -1,12 +1,10 @@
-import type * as React from "react";
-
 declare module "next" {
   export type Metadata = Record<string, unknown>;
   export type NextConfig = Record<string, unknown>;
 }
 
 declare module "next/link" {
-  const Link: React.ComponentType<Record<string, unknown>>;
+  const Link: any;
   export default Link;
 }
 
