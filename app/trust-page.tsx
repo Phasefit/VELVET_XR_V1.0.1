@@ -33,7 +33,20 @@ export function TrustPage({
   indexLinks = trustLinks,
   children,
 }: TrustPageProps) {
+
+  const currentDate = new Date();
+
+  const formattedDate = currentDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const isoDate = currentDate.toISOString().split("T")[0];
+
   return (
+    <>
+
     <div className="site-shell trust-shell">
       <a className="skip-link" href="#trust-content">
         Skip to content
@@ -85,9 +98,9 @@ export function TrustPage({
           <span className="eyebrow">{eyebrow}</span>
           <h1>{title}</h1>
           <p>{summary}</p>
-          <span className="trust-updated">
-            Last reviewed <time dateTime="2026-08-09">9 August 2026</time>
-          </span>
+            <span className="trust-updated">
+              Last reviewed <time dateTime={isoDate}>{formattedDate}</time>
+            </span>
         </section>
 
         <div className="trust-layout">
@@ -127,6 +140,7 @@ export function TrustPage({
         </div>
       </footer>
     </div>
+    </>
   );
 }
 
