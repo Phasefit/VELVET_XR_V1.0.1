@@ -53,7 +53,11 @@ export function DirectoryClient({
   const [showCompare, setShowCompare] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [outbound, setOutbound] = useState<OutboundSelection | null>(null);
-
+  const formattedDate = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const legacyDiscreet = localStorage.getItem("naervaer-discreet");
@@ -283,7 +287,7 @@ export function DirectoryClient({
           <div className="hero-content">
             <div className="hero-kicker">
               <span className="live-dot" />
-              Reviewed 9 August 2026
+              Reviewed {formattedDate}
             </div>
             <h1>
               The Best VR Porn, AR &amp; Passthrough MR Experiences, <em>Ranked.</em>
