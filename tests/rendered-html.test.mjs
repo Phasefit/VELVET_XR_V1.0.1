@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
+// Use environment variable for site URL, default to localhost for testing
+const SITE_URL = process.env.SITE_URL || "http://localhost:3000";
+const SITE_NAME = process.env.SITE_NAME || "VelvetXR";
+
 async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", process.pid + "-" + Date.now() + "-" + Math.random());
@@ -32,7 +36,7 @@ test("server-renders the English ranking content behind the session age overlay"
   assert.match(html, /<html lang="en">/i);
   assert.match(
     html,
-    /<title>Best VR Porn, AR &amp; Passthrough MR Sites \(2026\) \| VelvetXR<\/title>/i,
+    new RegExp(`<title>Best VR Porn, AR &amp; Passthrough MR Sites \\(2026\\) \\| ${SITE_NAME}<\\/title>`, "i"),
   );
   assert.equal((html.match(/<h1\b/gi) ?? []).length, 1);
   assert.match(html, /The Best VR Porn, AR &amp; Passthrough MR Experiences/);
@@ -42,18 +46,19 @@ test("server-renders the English ranking content behind the session age overlay"
   assert.match(html, /href="\/affiliate-disclosure"/);
   assert.match(html, /Loading VelvetXR/);
   assert.match(html, /name="robots" content="index, follow"/i);
-  assert.match(html, /property="og:image" content="https:\/\/www\.velvetxr\.com\/og\.png"/i);
+  // Check that og:image uses the configured site URL
+  assert.match(html, new RegExp(`property="og:image" content="${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/og\\.png"`, "i"));
   assert.doesNotMatch(html, /NÆRVÆR|Immersiv 18\+ teknologiguide/i);
 });
 
 test("server-renders every trust and guide route with unique English metadata", async () => {
   const routes = [
-    ["/affiliate-disclosure", "Affiliate Disclosure | VelvetXR", "Affiliate disclosure"],
-    ["/privacy", "Privacy | VelvetXR", "Privacy"],
-    ["/terms", "Terms of Use | VelvetXR", "Terms of use"],
-    ["/contact", "Contact and Site Information | VelvetXR", "Contact and site information"],
-    ["/how-we-rank", "How VelvetXR Ranks Adult XR Platforms | VelvetXR", "How we rank adult XR platforms"],
-    ["/guides/ar-vs-vr", "AR vs VR: Passthrough MR, VR180 and WebXR Explained | VelvetXR", "AR vs VR: what passthrough MR, VR180 and WebXR actually mean"],
+    ["/affiliate-disclosure", `Affiliate Disclosure | ${SITE_NAME}`, "Affiliate disclosure"],
+    ["/privacy", `Privacy | ${SITE_NAME}`, "Privacy"],
+    ["/terms", `Terms of Use | ${SITE_NAME}`, "Terms of use"],
+    ["/contact", `Contact and Site Information | ${SITE_NAME}`, "Contact and site information"],
+    ["/how-we-rank", `How ${SITE_NAME} Ranks Adult XR Platforms | ${SITE_NAME}`, "How we rank adult XR platforms"],
+    ["/guides/ar-vs-vr", `AR vs VR: Passthrough MR, VR180 and WebXR Explained | ${SITE_NAME}`, "AR vs VR: what passthrough MR, VR180 and WebXR actually mean"],
   ];
 
   const seenTitles = new Set();
@@ -130,7 +135,9 @@ test("keeps filters, evidence, local preferences, and affiliate state consistent
   assert.match(affiliateConfig, /partnerUrl \?\? platform\.url/);
   assert.match(affiliateConfig, /activePlatformIds/);
   assert.match(robots, /allow: "\/"/);
-  assert.match(robots, /https:\/\/www\.velvetxr\.com\/sitemap\.xml/);
+  assert.match(robots, /getSitemapUrl/);
+  assert.match(envExample, /SITE_URL=/);
+  assert.match(envExample, /SITE_NAME=/);
   assert.match(envExample, /SITE_OPERATOR_NAME=/);
   assert.match(envExample, /CONTACT_EMAIL=/);
 });
@@ -152,4 +159,33 @@ test("ships a non-trivial project-local social card", async () => {
   const socialCard = await stat(new URL("../public/og.png", import.meta.url));
   assert.ok(socialCard.isFile());
   assert.ok(socialCard.size > 100_000);
+});
+
+test("domain configuration is centralized and configurable", async () => {
+  const [siteConfig, layout, sitemap, robots] = await Promise.all([
+    readFile(new URL("../app/site-config.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/robots.ts", import.meta.url), "utf8"),
+  ]);
+
+  // Verify site-config module exists and exports the right functions
+  assert.match(siteConfig, /export const SITE_URL/);
+  assert.match(siteConfig, /export const SITE_NAME/);
+  assert.match(siteConfig, /export function getSiteUrl/);
+  assert.match(siteConfig, /export function getSocialImageUrl/);
+  assert.match(siteConfig, /export function getSitemapUrl/);
+
+  // Verify layout.tsx imports from site-config
+  assert.match(layout, /from "\.\/site-config"/);
+
+  // Verify sitemap.ts imports from site-config
+  assert.match(sitemap, /from "\.\/site-config"/);
+
+  // Verify robots.ts imports from site-config
+  assert.match(robots, /from "\.\/site-config"/);
+
+  // Verify environment variable fallback
+  assert.match(siteConfig, /process\.env\.SITE_URL/);
+  assert.match(siteConfig, /process\.env\.SITE_NAME/);
 });
