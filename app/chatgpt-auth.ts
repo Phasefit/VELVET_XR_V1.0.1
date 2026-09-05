@@ -1,6 +1,3 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-
 export type ChatGPTUser = {
   userId: string;
   displayName: string;
@@ -18,8 +15,10 @@ const SIGN_IN_PATH = "/signin-with-chatgpt";
 const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 
-export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
-  const requestHeaders = await headers();
+export async function getChatGPTUser(
+  request: Request,
+): Promise<ChatGPTUser | null> {
+  const requestHeaders = request.headers;
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);
   if (!userId || !email) return null;
@@ -40,12 +39,14 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
 }
 
 export async function requireChatGPTUser(
+  request: Request,
   returnTo: string,
 ): Promise<ChatGPTUser> {
-  const user = await getChatGPTUser();
+  const user = await getChatGPTUser(request);
   if (user) return user;
 
-  redirect(chatGPTSignInPath(returnTo));
+  void returnTo;
+  throw new Response("Unauthorized", { status: 401 });
 }
 
 export function chatGPTSignInPath(returnTo: string): string {

@@ -1,0 +1,83 @@
+name: VelvetXR Local Agent
+version: 1.0.0
+schema: v1
+
+# Keep development code and prompts on the local Ollama instance.
+models:
+  - name: VelvetXR Coder 14B
+    provider: ollama
+    apiBase: http://localhost:11434
+    model: qwen2.5-coder:14b
+    capabilities:
+      - tool_use # Enforces tool usage for MCP servers
+    roles:
+      - chat
+      - edit
+      - apply
+    defaultCompletionOptions:
+      contextLength: 16384
+      maxTokens: 4096
+      temperature: 0.2
+      keepAlive: 1800 # Keeps model in VRAM for 30 minutes
+
+  - name: VelvetXR Autocomplete 7B
+    provider: ollama
+    apiBase: http://localhost:11434
+    model: qwen2.5-coder:7b
+    roles:
+      - autocomplete
+    defaultCompletionOptions:
+      keepAlive: 1800 # Keeps autocomplete model warm
+    autocompleteOptions:
+      debounceDelay: 350
+      maxPromptTokens: 1024
+      onlyMyCode: true
+
+rules:
+  - Work within the existing VelvetXR architecture and preserve public APIs.
+  - Use TypeScript and React 19 patterns already established in the repository.
+  - Treat this as a vinext and Next-compatible app deployed to Cloudflare Workers.
+  - "Keep Cloudflare Worker code compatible with the Workers runtime; do not assume Node-only APIs at runtime."
+  - Prefer existing helpers, configuration, and data structures over new abstractions.
+  - Keep edits focused and avoid changing unrelated files or formatting.
+  - For UI changes, preserve the existing accessible, responsive design and do not add placeholder content.
+  - For affiliate, legal, privacy, and operator information, never invent facts or credentials.
+  - Before finishing, check relevant TypeScript, lint, build, and rendered HTML tests.
+  - Generate TypeScript by default and use ES modules exclusively.
+  - Import every method, class, and type used in generated TypeScript.
+  - Never place secrets, API keys, account IDs, or credentials in source files or configuration committed to the repository.
+  - Use only Cloudflare bindings that are declared in code and wrangler.jsonc; do not add unused bindings.
+  - Use Workers AI by default for new AI inference unless the user explicitly requests another provider.
+  - Use D1 for relational SQL, KV for key-value data, R2 for objects, Durable Objects for strongly consistent state, and Queues for asynchronous work.
+  - "For WebSockets in Durable Objects, use the WebSocket Hibernation API and this.ctx.acceptWebSocket(server)."
+  - Validate request input, apply appropriate security headers, handle CORS deliberately, and return meaningful HTTP status codes.
+  - Preserve the existing wrangler.jsonc compatibility settings and use JSONC configuration rather than wrangler.toml.
+  - Keep generated solutions self-contained and include complete relevant files when a new Worker example is requested.
+
+context:
+  - provider: code
+  - provider: file
+  - provider: diff
+  - provider: terminal
+
+docs:
+  - name: Cloudflare Workers
+    startUrl: https://cloudflare.com
+  - name: Continue Configuration
+    startUrl: https://continue.dev
+
+mcpServers:
+  # Sequential Thinking: Helps local models solve complex logic bugs systematically
+  - name: sequential-thinking
+    command: npx
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-sequential-thinking"
+
+  # Filesystem Server: Gives the agent read/write capabilities to your project directory
+  - name: filesystem
+    command: npx
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+      - "A:/The Matrix/Prosjekter/VELVET_XR_V1.0.1"
